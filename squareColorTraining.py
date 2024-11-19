@@ -1,6 +1,6 @@
 # This is my first draft of an app that will allow me to practice identifying the
-# square colors on a chess board. For reference, the bottom right corner of a 
-# chess board is always light and the bottom left is always dark
+# square colors on a chess board while blindfoled. For reference, the bottom right 
+# corner of a chess board is always light and the bottom left is always dark
 
 from random import randint
 from time import time, sleep
