@@ -6,7 +6,7 @@ from random import randint
 from time import time, sleep
 from datetime import datetime
 import openpyxl
-from openpyxl.styles import Alignment
+from openpyxl.styles import Alignment, Font
 
 # Instantiates the table
 light = ('b1','d1','f1','h1','a2','c2','e2','g2','b3','d3','f3','h3','a4','c4','e4','g4',
@@ -55,13 +55,14 @@ per_question = round(duration/run,3)
 sleep(1)
 print('Training complete.')
 sleep(1)
-print(f'Your score was {correct} out of {run} or {accuracy*100}%')
+print(f'Your score was {correct} out of {run} or {round(accuracy*100,1)}%')
 sleep(1)
 print(f'Your average speed was {per_question} seconds per square')
 
 # Log results in an Excel file
-date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-file_name = "Square Color Training Log.xlsx"
+date = datetime.now().strftime("%Y-%m-%d")
+current_time = datetime.now().strftime('%H:%M:%S')
+file_name = "Color Training Log V3.xlsx"
 
 try:
     # Load existing workbook or create a new one
@@ -71,16 +72,20 @@ try:
     except FileNotFoundError:
         workbook = openpyxl.Workbook()
         sheet = workbook.active
-        sheet.append(["Accuracy", "Reaction Time", "Total Squares", "Date"])  # Header row
+        sheet.append(["Accuracy", "Reaction Time", "Total Squares", "Date", "Time"])  # Header row
+        for col in range(1, 6):  # Columns A (1) to E (5)
+            sheet.cell(row=1, column=col).alignment = Alignment(horizontal='center', vertical='center')
+            sheet.cell(row=1,column=col).font = Font(bold=True)
+		# Set column widths
+        for col_letter in ['A','B','C','D','E']:
+            sheet.column_dimensions[col_letter].width = 130 / 7.5  # Convert pixels to Excel width
 
     # Append the results
-    sheet.append([accuracy * 100, per_question, run, date])
+    sheet.append([accuracy * 100, per_question, run, date, current_time])
     row = sheet.max_row  # Get the last row where data was appended
-    for col in range(1, 4):  # Columns A (1) to D (4)
+    for col in range(1, 6):  # Columns A (1) to D (4)
         sheet.cell(row=row, column=col).alignment = Alignment(horizontal='center', vertical='center')
 
-    
-	
     # Save the workbook
     workbook.save(file_name)
     print(f"Results saved to {file_name}.")
