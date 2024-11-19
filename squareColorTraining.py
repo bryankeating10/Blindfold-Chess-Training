@@ -4,6 +4,9 @@
 
 from random import randint
 from time import time, sleep
+from datetime import datetime
+import openpyxl
+from openpyxl.styles import Alignment
 
 # Instantiates the table
 light = ('b1','d1','f1','h1','a2','c2','e2','g2','b3','d3','f3','h3','a4','c4','e4','g4',
@@ -31,18 +34,12 @@ while True:
 start = time()
 correct = 0
 
-# Debugging
-light_count = 0
-dark_count = 0
-
 for i in range(run):
 	square = board[randint(0,63)]		# Generates a random square
 	if square in light:
 		color = 'l'
-		light_count += 1
 	else:
 		color = 'd'
-		dark_count += 1
 	answer = input(square + ': ')		# Tests the user
 	if answer == color:					# Checks for accuracy
 		print('Correct!')
@@ -53,7 +50,7 @@ for i in range(run):
 # End of training session
 stop = time()
 duration = stop-start
-accuracy = correct/run
+accuracy = round(correct/run,3)
 per_question = round(duration/run,3)
 sleep(1)
 print('Training complete.')
@@ -62,6 +59,30 @@ print(f'Your score was {correct} out of {run} or {accuracy*100}%')
 sleep(1)
 print(f'Your average speed was {per_question} seconds per square')
 
-# Debugging
-sleep(1)
-print(f'Light count: {light_count}, Dark count: {dark_count}')
+# Log results in an Excel file
+date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+file_name = "Square Color Training Log.xlsx"
+
+try:
+    # Load existing workbook or create a new one
+    try:
+        workbook = openpyxl.load_workbook(file_name)
+        sheet = workbook.active
+    except FileNotFoundError:
+        workbook = openpyxl.Workbook()
+        sheet = workbook.active
+        sheet.append(["Accuracy", "Reaction Time", "Total Squares", "Date"])  # Header row
+
+    # Append the results
+    sheet.append([accuracy * 100, per_question, run, date])
+    row = sheet.max_row  # Get the last row where data was appended
+    for col in range(1, 4):  # Columns A (1) to D (4)
+        sheet.cell(row=row, column=col).alignment = Alignment(horizontal='center', vertical='center')
+
+    
+	
+    # Save the workbook
+    workbook.save(file_name)
+    print(f"Results saved to {file_name}.")
+except Exception as e:
+    print(f"Error saving results to Excel: {e}")
