@@ -3,6 +3,7 @@
 # chess board is always light and the bottom left is always dark
 
 from random import randint
+from time import time, sleep
 
 # Instantiates the table
 light = ('b1','d1','f1','h1','a2','c2','e2','g2','b3','d3','f3','h3','a4','c4','e4','g4',
@@ -16,19 +17,32 @@ while True:
 	run = input('How many squares do you want to train? ')
 	try:
 		run = int(run)
+		sleep(1)
+		print("Use 'l' to indicate light squares and 'd' to indicate dark squares")
+		sleep(1)
+		print("Begin")
+		sleep(1)
 		break
 	except:
 		print('That is not a valid amount of squares')
 
 
 # Tests the user on the amount of squares they requested
+start = time()
 correct = 0
+
+# Debugging
+light_count = 0
+dark_count = 0
+
 for i in range(run):
 	square = board[randint(0,63)]		# Generates a random square
 	if square in light:
-		color = 'light'
+		color = 'l'
+		light_count += 1
 	else:
-		color = 'dark'
+		color = 'd'
+		dark_count += 1
 	answer = input(square + ': ')		# Tests the user
 	if answer == color:					# Checks for accuracy
 		print('Correct!')
@@ -37,5 +51,17 @@ for i in range(run):
 		print('Incorrect')
 
 # End of training session
+stop = time()
+duration = stop-start
 accuracy = correct/run
-print(f'Training complete. Your score was {correct} out of {run} or {accuracy*100}%')
+per_question = round(duration/run,3)
+sleep(1)
+print('Training complete.')
+sleep(1)
+print(f'Your score was {correct} out of {run} or {accuracy*100}%')
+sleep(1)
+print(f'Your average speed was {per_question} seconds per square')
+
+# Debugging
+sleep(1)
+print(f'Light count: {light_count}, Dark count: {dark_count}')
