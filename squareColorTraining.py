@@ -1,6 +1,6 @@
 # This is my first draft of an app that will allow me to practice identifying the
-# square colors on a chess board while blindfoled. For reference, the bottom right 
-# corner of a chess board is always light and the bottom left is always dark
+# square colors on a chess board. For reference, the bottom right corner of a 
+# chess board is always light and the bottom left is always dark
 
 from random import randint
 from time import time, sleep
@@ -17,7 +17,7 @@ board = dark + light
 
 # Asks the user how many squares they want to practice
 while True:
-	run = input('How many squares do you want to train? ')
+	run = input('How many squares do you want to train? (80 is recommended)')
 	try:
 		run = int(run)
 		sleep(1)
