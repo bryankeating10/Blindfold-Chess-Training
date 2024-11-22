@@ -75,45 +75,107 @@ print(f'Your score was {correct} out of {run} or {round(accuracy*100,1)}%')
 sleep(1)
 print(f'Your average speed was {per_question} seconds per square')
 
-# Organizes data
+# Dictionaries for file insight
 total_time_correct =  {'a':0,'b':0,'c':0,'d':0,'e':0,'f':0,'g':0,'h':0}
 total_time_incorrect = {'a':0,'b':0,'c':0,'d':0,'e':0,'f':0,'g':0,'h':0}
-total_letters_correct = {'a':0,'b':0,'c':0,'d':0,'e':0,'f':0,'g':0,'h':0}
-total_letters_incorrect = {'a':0,'b':0,'c':0,'d':0,'e':0,'f':0,'g':0,'h':0}
+total_squares_correct = {'a':0,'b':0,'c':0,'d':0,'e':0,'f':0,'g':0,'h':0}
+total_squares_incorrect = {'a':0,'b':0,'c':0,'d':0,'e':0,'f':0,'g':0,'h':0}
 average_time_correct = {'a':0,'b':0,'c':0,'d':0,'e':0,'f':0,'g':0,'h':0}
 average_time_incorrect = {'a':0,'b':0,'c':0,'d':0,'e':0,'f':0,'g':0,'h':0}
 
+# Dictionary for square color insight
+color_reaction = {'light':{'time':{'correct':0,'incorrect':0},'count':{'correct':0,'incorrect':0}},
+				  'dark':{'time':{'correct':0,'incorrect':0},'count':{'correct':0,'incorrect':0}}}
+
+# Updates dictionaries with training data
 for s,t in correct_reaction.items():
 	total_time_correct[s[0]] += sum(t)
-	total_letters_correct[s[0]] += len(t)
+	total_squares_correct[s[0]] += len(t)
+	if s in light:
+		color_reaction['light']['time']['correct']+=sum(t)
+		color_reaction['light']['count']['correct'] += len(t)
+	else:
+		color_reaction['dark']['time']['correct']+=sum(t)
+		color_reaction['dark']['count']['correct']+= len(t)
 for s,t in incorrect_reaction.items():
 	total_time_incorrect[s[0]] += sum(t)
-	total_letters_incorrect[s[0]] += len(t)
+	total_squares_incorrect[s[0]] += len(t)
+	if s in light:
+		color_reaction['light']['time']['incorrect']+=sum(t)
+		color_reaction['light']['count']['incorrect'] += len(t)
+	else:
+		color_reaction['dark']['time']['incorrect']+=sum(t)
+		color_reaction['dark']['count']['incorrect'] += len(t)
 
-for [ttk,ttv],[tlk,tlv],[atk,atv] in zip(total_time_correct.items(),total_letters_correct.items(),average_time_correct.items()):
+
+# # Debugging
+# print(f'Total squares correct: \n {total_squares_correct}')
+# print('')
+# print(f'Total squares incorrect: \n {total_squares_incorrect}')
+# print('')
+
+# print(f'Total time correct: \n {total_time_correct}')
+# print('')
+# print(f'Total time incorrect: \n {total_time_incorrect}')
+# print('')
+
+# print(f'Color reaction: {color_reaction}')
+# print('')
+
+# Calculates the average time per answer grouped by file
+for [ttk,ttv],[tlk,tlv],[atk,atv] in zip(total_time_correct.items(),total_squares_correct.items(),average_time_correct.items()):
 	try:
 		average_time_correct[atk] = ttv/tlv
 	except ZeroDivisionError:
 		average_time_correct[atk] = 0
-for [ttk,ttv],[tlk,tlv],[atk,atv] in zip(total_time_incorrect.items(),total_letters_incorrect.items(),average_time_incorrect.items()):
+for [ttk,ttv],[tlk,tlv],[atk,atv] in zip(total_time_incorrect.items(),total_squares_incorrect.items(),average_time_incorrect.items()):
 	try:
 		average_time_incorrect[atk] = ttv/tlv
 	except:
 		average_time_incorrect[atk] = 0
 
+# Calculates the average time per answer grouped by square color
+color_avg_time_correct = {'light':color_reaction['light']['time']['correct']/color_reaction['light']['count']['correct'],
+						  'dark':color_reaction['dark']['time']['correct']/color_reaction['dark']['count']['correct']}
+color_avg_time_incorrect = {'light':color_reaction['light']['time']['incorrect']/color_reaction['light']['count']['incorrect'],
+						  'dark':color_reaction['dark']['time']['incorrect']/color_reaction['dark']['count']['incorrect']}
+
+print("****************")
+print(f'Color avg time correct: \n {color_avg_time_correct}')
+print('')
+print(f'Color avg time incorrect: \n {color_avg_time_incorrect}')
+
 correct_list = [value for value in average_time_correct.values()]
 incorrect_list = [value for value in average_time_incorrect.values()]
+color_correct_list = [value for value in color_avg_time_correct.values()]
+color_incorrect_list = [value for value in color_avg_time_incorrect.values()]
 
 # Displays the data
 columns = ['a','b','c','d','e','f','g','h']
-x = np.arange(len(columns))
+colors = ['light','dark']
+x_f = np.arange(len(columns))
+x_c = np.arange(len(colors))
 width = 0.35
-plt.bar(x - width/2, correct_list, width, label='Corect')
-plt.bar(x + width/2, incorrect_list, width, label='Incorrect')
+
+# Plots results by file
+plt.figure('Files')
+plt.bar(x_f - width/2, correct_list, width, label='Corect')
+plt.bar(x_f + width/2, incorrect_list, width, label='Incorrect')
 plt.xlabel('Column')
 plt.ylabel('Reaction Time')
-plt.title('Average Reaction Time by Letter')
-plt.xticks(x, columns)
+plt.title('Average Reaction Time by File')
+plt.xticks(x_f, columns)
+plt.grid(True)
+plt.legend()
+
+# Plots results by color
+plt.figure('Colors')
+plt.bar(x_c - width/2, color_correct_list, width, label='Corect')
+plt.bar(x_c + width/2, color_incorrect_list, width, label='Incorrect')
+plt.xlabel('Color')
+plt.ylabel('Reaction Time')
+plt.title('Average Reaction Time by Color')
+plt.xticks(x_c, colors)
 plt.grid(True)
 plt.legend()
 plt.show()
