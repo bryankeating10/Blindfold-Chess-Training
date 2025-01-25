@@ -9,14 +9,24 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+
 # Setup Selenium WebDriver
 options = Options()
 options.add_argument("--headless")  # Optional: Run in headless mode (no GUI)
-driver = webdriver.Chrome(service=Service('/path/to/chromedriver'), options=options)
+
+# Create a Service object
+service = Service(ChromeDriverManager().install())
+
+# Initialize the WebDriver with the Service object
+driver = webdriver.Chrome(service=service)
 
 try:
     # Open Chess.com login page
     driver.get("https://www.chess.com/login")
+    print("Opening chess.com login page")
 
     # Wait for the page to load
     WebDriverWait(driver, 10).until(
@@ -26,10 +36,12 @@ try:
     # Locate the login elements (username and password fields)
     username_field = driver.find_element(By.ID, "username")
     password_field = driver.find_element(By.ID, "password")
+    print("Locating the login elements")
 
     # Enter your Chess.com credentials
     username_field.send_keys("BKChessMaster2")  # Replace with your Chess.com username
     password_field.send_keys("chesspasshaha12A")  # Replace with your Chess.com password
+    print('Entering in credentials')
 
     # Submit the login form
     password_field.send_keys(Keys.RETURN)
