@@ -1,73 +1,9 @@
 # Combines the puzzle data from multiple pages on my Chess.com
 # account and formats it into a table in Excel
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+# My orginal attempt was to have ChatGPT write the program and I 
+# would add to it, but there has been so many issues that I'm going
+# to attempt to learn the Selenium package from the ground up and
+# build the program myself
 
-from selenium import webdriver
-from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
-# Setup Selenium WebDriver
-options = Options()
-options.add_argument("--headless")  # Optional: Run in headless mode (no GUI)
-
-# Create a Service object
-service = Service(ChromeDriverManager().install())
-
-# Initialize the WebDriver with the Service object
-driver = webdriver.Chrome(service=service)
-
-try:
-    # Open Chess.com login page
-    driver.get("https://www.chess.com/login")
-    print("Opening chess.com login page")
-
-    # Wait for the page to load
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.ID, "username"))
-    )
-
-    # Locate the login elements (username and password fields)
-    username_field = driver.find_element(By.ID, "username")
-    password_field = driver.find_element(By.ID, "password")
-    print("Locating the login elements")
-
-    # Enter your Chess.com credentials
-    username_field.send_keys("BKChessMaster2")  # Replace with your Chess.com username
-    password_field.send_keys("chesspasshaha12A")  # Replace with your Chess.com password
-    print('Entering in credentials')
-
-    # Submit the login form
-    password_field.send_keys(Keys.RETURN)
-
-    # Wait for successful login (check if the page URL changes or a specific element appears)
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, "div.profile-avatar"))
-    )
-
-    # Now that we're logged in, navigate to the puzzles page
-    driver.get("https://www.chess.com/puzzles/problems?page=20")
-
-    # Wait for the puzzle table to load
-    WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.CLASS_NAME, "puzzle-list"))
-    )
-
-    # Extract data from the puzzle table
-    puzzles = driver.find_elements(By.CSS_SELECTOR, ".puzzle-list .puzzle-item")
-
-    # Print the puzzle details
-    for puzzle in puzzles:
-        puzzle_title = puzzle.find_element(By.CSS_SELECTOR, ".puzzle-title").text
-        puzzle_rating = puzzle.find_element(By.CSS_SELECTOR, ".rating").text
-        print(f"Title: {puzzle_title}, Rating: {puzzle_rating}")
-
-finally:
-    # Clean up and close the browser
-    driver.quit()
