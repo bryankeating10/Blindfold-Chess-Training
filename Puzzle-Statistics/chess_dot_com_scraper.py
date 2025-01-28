@@ -25,12 +25,19 @@ print("WebDriver setup complete and login page opened.")
 
 # Wait for the username field to be loaded
 wait = WebDriverWait(driver, 10)  # Wait for a maximum of 10 seconds
-username_field = wait.until(EC.presence_of_element_located((By.NAME, "username")))
-print("Username field located.")
+try:
+    username_field = EC.presence_of_element_located((By.NAME, "Username, Phone, or Email"))
+    print("Username field located")
+except:
+    print("Username field not located")
+
 
 # Locate the password field
-password_field = driver.find_element(By.NAME, "password")
-print("Password field located.")
+try:
+     password_field = EC.presence_of_element_located(By.NAME, "Password")
+     print("Password field located")
+except:
+	print("Password field not located.")
 
 # Locate the login button
 login_button = driver.find_element(By.XPATH, "//button[@type='submit']")  # Use XPath to locate the login button
